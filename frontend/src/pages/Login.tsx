@@ -1,0 +1,44 @@
+import React, { useState, useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
+
+export default function Login() {
+  const { login } = useContext(AuthContext)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await login(email, password)
+    } catch (err: any) {
+      setError(err.message)
+    }
+  }
+
+  return (
+    <div className="max-w-sm mx-auto mt-20 p-6 bg-white shadow rounded">
+      <h2 className="text-xl mb-4">Iniciar sesión</h2>
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
+          Entrar
+        </button>
+      </form>
+    </div>
+  )
+}
