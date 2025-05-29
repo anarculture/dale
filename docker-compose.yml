@@ -1,0 +1,36 @@
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dale
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/dale"
+      JWT_SECRET: "un-secret-muy-seguro"
+    depends_on:
+      db:
+        condition: service_healthy
+    # Al arrancar, primero aplicamos migraciones y luego iniciamos el servidor
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npm run dev
+      "
+
+volumes:
+  pgdata:
