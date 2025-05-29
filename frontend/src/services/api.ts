@@ -1,5 +1,21 @@
+/// <reference types="vite/client" />
+
+// TypeScript declaration for Vite's import.meta.env
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+const API = import.meta.env.VITE_API_URL;
+
+/**
+ * Tipado de un viaje (Trip)
+ */
 export interface Trip {
-  id: string;
+  id: number;
   origin: string;
   destination: string;
   date: string;
@@ -13,30 +29,125 @@ export interface Trip {
   };
 }
 
-// Simulación de búsqueda de viajes
-export async function getTrips(filters: any): Promise<Trip[]> {
-  // Aquí deberías hacer una llamada real a tu backend
-  // Por ahora, devolvemos datos simulados
-  return [
-    {
-      id: '1',
-      origin: 'Ciudad de México, CDMX, México',
-      destination: 'Guadalajara, Jal., México',
-      date: filters.date || new Date().toISOString(),
-      price: 500,
-      availableSeats: 3,
-      estimatedDurationMs: 6 * 60 * 60 * 1000,
-      driver: {
-        name: 'Juan Pérez',
-        ratingAvg: 4.8,
-        ratingCount: 12,
-      },
-    },
-  ];
+/**
+ * Registro de usuario
+ */
+export async function register(data: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  isDriver?: boolean;
+}) {
+  const res = await fetch(`${API}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return res.json();
 }
 
-// Simulación de reserva de viaje
-export async function reserveTrip(tripId: string, token: string): Promise<void> {
-  // Aquí deberías hacer una llamada real a tu backend
-  alert(`Reserva realizada para el viaje ${tripId}`);
+/**
+ * Login de usuario
+ */
+export async function login(data: {
+  email: string;
+  password: string;
+}) {
+  const res = await fetch(`${API}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+/**
+ * Obtiene datos del usuario autenticado
+ */
+export async function fetchMe(token: string) {
+  const res = await fetch(`${API}/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/**
+ * Listar viajes con filtros opcionales
+ */
+export async function getTrips(filters: {
+  origin?: string;
+  destination?: string;
+  date?: string;
+} = {}): Promise<Trip[]> {
+  const qs = new URLSearchParams(filters as Record<string, string>).toString();
+  const res = await fetch(`${API}/trips${qs ? `?${qs}` : ''}`);
+  return res.json();
+}
+
+/**
+ * Crear un nuevo viaje (requiere token)
+ */
+export async function createTrip(
+  data: {
+    origin: string;
+    destination: string;
+    date: string;
+    availableSeats: number;
+    price: number;
+  },
+  token: string
+) {
+  const res = await fetch(`${API}/trips`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+/**
+ * Reservar un asiento en un viaje (requiere token)
+ */
+export async function reserveTrip(tripId: number, token: string) {
+  const res = await fetch(`${API}/trips/${tripId}/reserve`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/**
+ * Listar las reservas del usuario autenticado
+ */
+export async function getMyReservations(token: string) {
+  const res = await fetch(`${API}/reservations/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/**
+ * Dejar una calificación para una reserva (requiere token)
+ */
+export async function reviewReservation(
+  reservationId: number,
+  data: {
+    rating: number;
+    comment?: string;
+  },
+  token: string
+) {
+  const res = await fetch(`${API}/reservations/${reservationId}/review`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
 }

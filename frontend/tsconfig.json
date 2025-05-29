@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Genera JS moderno
+    "useDefineForClassFields": true, // Compatibilidad con TS y Babel
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ], // Tipos de entorno
+    "allowJs": false, // No mezclar .js
+    "skipLibCheck": true, // Ignora chequeo de node_modules
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true, // Permite imports por defecto
+    "strict": true, // Habilita todas las comprobaciones estrictas
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext", // Módulos ESM
+    "moduleResolution": "Node", // Resolución de módulos estilo Node
+    "resolveJsonModule": true, // Permite importar .json
+    "isolatedModules": true, // Requerido por Vite
+    "noEmit": true, // No genera archivos .js
+    "jsx": "react-jsx" // Soporte JSX automático
+  },
+  "include": [
+    "src", // Código de tu app
+    "vite.config.ts" // Para que TS también tipifique tu config
+  ],
+  "exclude": [
+    "node_modules", // No analizar dependencias
+    "dist" // Directorio de build
+  ]
+}
