@@ -1,17 +1,22 @@
 # backend/Dockerfile
 FROM node:18-bullseye-slim
 
-# 1) Set working dir
 WORKDIR /app
 
-# 2) Copy package manifests and install deps
+# 1) copy package files and install
 COPY package*.json ./
 RUN npm ci
 
-# 3) Copy all code and build
+# 2) copy the prisma schema *before* generating client
+COPY prisma ./prisma
+
+# 3) generate Prisma Client (picks up your binaryTargets change)
+RUN npx prisma generate
+
+# 4) copy the rest of your source and install devDeps
 COPY . .
+# (you already have ts-node-dev, bcrypt, etc in package.json)
 RUN npm run build
 
-# 4) Expose port and run the compiled output
 EXPOSE 3001
 CMD ["npm", "start"]
