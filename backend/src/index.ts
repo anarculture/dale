@@ -12,22 +12,23 @@ app.use(express.json())
 const authRouter = require('./routes/auth')
 const tripsRouter = require('./routes/trips')
 
-// Lo primero: un log para comprobar que este fichero se ejecuta
+// 1) Log de arranque
 console.log('🚀 Iniciando backend de Dale...')
 
-// Montamos las rutas de autenticación
+// 2) Rutas de autenticación
 console.log('🔐 Montando auth routes en /api/auth')
 app.use('/api/auth', authRouter)
 
-// Montamos la ruta de viajes
+// 3) Rutas de viajes
 console.log('🚗 Montando trips routes en /api/trips')
 app.use('/api/trips', tripsRouter)
 
-// Sanity check público
+// 4) Sanity check público
 app.get('/api/ping', (_req: Request, res: Response) => {
   res.json({ message: 'pong' })
 })
 
+// 5) Levantar servidor
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`🖥️  Server escuchando en http://localhost:${PORT}`)

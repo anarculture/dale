@@ -1,23 +1,17 @@
 # backend/Dockerfile
-
 FROM node:18-bullseye-slim
 
+# 1) Set working dir
 WORKDIR /app
 
-# Instala dependencias del sistema (incluye libssl)
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-  libssl-dev \
-  && rm -rf /var/lib/apt/lists/*
-
-# Copia y prepara tu app
+# 2) Copy package manifests and install deps
 COPY package*.json ./
 RUN npm ci
 
+# 3) Copy all code and build
 COPY . .
-RUN npx prisma generate
 RUN npm run build
 
+# 4) Expose port and run the compiled output
 EXPOSE 3001
-
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]
