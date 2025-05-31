@@ -1,7 +1,7 @@
 // frontend/src/App.tsx
-import React, { useContext } from 'react'
+import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Header from './components/Header'
+
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -9,72 +9,28 @@ import SearchResults from './pages/SearchResults'
 import CreateTrip from './pages/CreateTrip'
 import Reservations from './pages/Reservations'
 import ReviewReservation from './pages/ReviewReservation'
-import { AuthContext } from './context/AuthContext'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
-export default function App() {
-  const { token } = useContext(AuthContext)
+const App: React.FC = () => (
+  <BrowserRouter>
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<Landing />} />
+      <Route path="login" element={<Login />} />
+      <Route path="register" element={<Register />} />
 
-  return (
-    <BrowserRouter>
-      <Header />
+      {/* Protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="search" element={<SearchResults />} />
+        <Route path="create" element={<CreateTrip />} />
+        <Route path="reservations" element={<Reservations />} />
+        <Route path="reservations/:id/review" element={<ReviewReservation />} />
+      </Route>
 
-      <Routes>
-        {/* Landing pública */}
-        <Route path="/" element={<Landing />} />
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  </BrowserRouter>
+)
 
-        {/* Auth */}
-        <Route
-          path="/login"
-          element={token ? <Navigate to="/search" replace /> : <Login />}
-        />
-        <Route
-          path="/register"
-          element={token ? <Navigate to="/search" replace /> : <Register />}
-        />
-
-        {/* Búsqueda de viajes */}
-        <Route
-          path="/search"
-          element={
-            token
-              ? <SearchResults />
-              : <Navigate to="/login" replace />
-          }
-        />
-
-        {/* Crear nuevo viaje */}
-        <Route
-          path="/create"
-          element={
-            token
-              ? <CreateTrip />
-              : <Navigate to="/login" replace />
-          }
-        />
-
-        {/* Mis reservas */}
-        <Route
-          path="/reservations"
-          element={
-            token
-              ? <Reservations />
-              : <Navigate to="/login" replace />
-          }
-        />
-
-        {/* Formulario de calificación */}
-        <Route
-          path="/reservations/:id/review"
-          element={
-            token
-              ? <ReviewReservation />
-              : <Navigate to="/login" replace />
-          }
-        />
-
-        {/* Ruta catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  )
-}
+export default App
