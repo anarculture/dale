@@ -1,22 +1,21 @@
 # backend/Dockerfile
-FROM node:18-bullseye-slim
 
+FROM node:18-alpine
+
+# Install dependencies required to build native modules like bcrypt
+RUN apk add --no-cache python3 make g++
 WORKDIR /app
 
-# 1) copy package files and install
+# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# 2) copy the prisma schema *before* generating client
-COPY prisma ./prisma
-
-# 3) generate Prisma Client (picks up your binaryTargets change)
-RUN npx prisma generate
-
-# 4) copy the rest of your source and install devDeps
+# Copy application source
 COPY . .
-# (you already have ts-node-dev, bcrypt, etc in package.json)
+
+# Compile TypeScript
+RUN npx prisma generate
 RUN npm run build
 
-EXPOSE 3001
+EXPOSE 5000
 CMD ["npm", "start"]

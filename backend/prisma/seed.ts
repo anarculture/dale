@@ -1,31 +1,39 @@
-// backend/prisma/seed.ts
-import { PrismaClient, Prisma } from "@prisma/client"
-import bcrypt from "bcrypt"
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  const passwordHash = await bcrypt.hash("123456", 10)
+  const mockDriverId = 1;
 
-  await prisma.user.upsert({
-    where: { email: "alice@dale.app" },
-    update: {},
-    create: {
-      name: "Alice",
-      email: "alice@dale.app",
-      password: passwordHash,
-      isDriver: true
-    } as Prisma.UserUncheckedCreateInput,   // ← CAST AQUÍ
-  })
+  await prisma.trip.createMany({
+    data: [
+      {
+        driverId: mockDriverId,
+        origin: 'Downtown',
+        destination: 'Airport',
+        date: new Date(Date.now() + 86400000),
+        availableSeats: 3,
+        price: 25.5,
+      },
+      {
+        driverId: mockDriverId,
+        origin: 'Uptown',
+        destination: 'Central Park',
+        date: new Date(Date.now() + 2 * 86400000),
+        availableSeats: 2,
+        price: 15.0,
+      },
+    ],
+  });
 
-  console.log("✅ Seed completed")
+  console.log('✅ Trips seeded');
 }
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

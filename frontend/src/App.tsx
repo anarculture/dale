@@ -1,36 +1,35 @@
-// frontend/src/App.tsx
-import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import SearchResults from './pages/SearchResults'
-import CreateTrip from './pages/CreateTrip'
-import Reservations from './pages/Reservations'
-import ReviewReservation from './pages/ReviewReservation'
-import { ProtectedRoute } from './components/ProtectedRoute'
+function App() {
+  const [count, setCount] = useState(0)
 
-const App: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<Landing />} />
-      <Route path="login" element={<Login />} />
-      <Route path="register" element={<Register />} />
-
-      {/* Protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="search" element={<SearchResults />} />
-        <Route path="create" element={<CreateTrip />} />
-        <Route path="reservations" element={<Reservations />} />
-        <Route path="reservations/:id/review" element={<ReviewReservation />} />
-      </Route>
-
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  </BrowserRouter>
-)
+  return (
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
+}
 
 export default App
