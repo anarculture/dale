@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ES2021",
     "module": "commonjs",
-    "rootDir": "./",
-    "outDir": "dist",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -11,7 +11,6 @@
   },
 "include": [
   "src",
-  "prisma",
-  "src/types"
+    "src/types"
 ]
 }

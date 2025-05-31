@@ -1,20 +1,18 @@
-# backend/Dockerfile
-
+# Dockerfile (backend)
 FROM node:18-alpine
 
-# Install dependencies required to build native modules like bcrypt
 RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
-# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy application source
-COPY . .
+COPY tsconfig.json ./
+COPY src ./src
+COPY src/prisma ./src/prisma
 
-# Compile TypeScript
-RUN npx prisma generate
+RUN npx prisma generate --schema=src/prisma/schema.prisma
 RUN npm run build
 
 EXPOSE 5000

@@ -20,13 +20,30 @@ app.use(morgan('dev'));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-// ✅ BetterAuth middleware: use the default import and call `.express()`
-// If betterAuth does not require any options, use it without arguments:
-app.use(
-  betterAuth({}).handler // Pass an empty options object as required
-);
+// ✅ BetterAuth handler (Express integration)
+app.all('/api/auth/*', async (req, res) => {
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (Array.isArray(value)) {
+      headers.set(key, value.join(','));
+    } else if (value !== undefined) {
+      headers.set(key, value);
+    }
+  }
 
-// If you need to pass options, replace with the correct property names as per better-auth documentation.
+  const request = new Request(`http://localhost${req.url}`, {
+    method: req.method,
+    headers,
+    body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null,
+  });
+
+  const response = await betterAuth({}).handler(request);
+  const responseBody = await response.text();
+
+  res.status(response.status);
+  response.headers.forEach((value, key) => res.setHeader(key, value));
+  res.send(responseBody);
+});
 
 // ✅ Routes
 app.use('/api/auth', authRoutes);
