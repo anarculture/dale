@@ -1,15 +1,20 @@
 // src/pages/Dashboard.tsx
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('/api/auth/session')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Not authenticated');
+        return res.json();
+      })
       .then(data => setUser(data))
-      .catch(() => setUser(null));
-  }, []);
+      .catch(() => navigate('/login'));
+  }, [navigate]);
 
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-2xl shadow">
@@ -17,7 +22,7 @@ export default function Dashboard() {
       {user ? (
         <pre className="text-sm bg-gray-100 p-2 rounded">{JSON.stringify(user, null, 2)}</pre>
       ) : (
-        <p>Not logged in</p>
+        <p>Loading...</p>
       )}
     </div>
   );

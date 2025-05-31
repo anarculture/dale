@@ -1,18 +1,23 @@
 # Dockerfile (backend)
 FROM node:18-alpine
 
+# Add native build dependencies required by bcrypt
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
 COPY package*.json ./
+
+# ⬇️ Install deps incl. bcrypt from package.json
 RUN npm install
 
-COPY tsconfig.json ./
-COPY src ./src
-COPY src/prisma ./src/prisma
+# ⬇️ Copy source AFTER install
+COPY . .
 
-RUN npx prisma generate --schema=src/prisma/schema.prisma
+# ⬇️ Prisma generate inside image
+RUN npx prisma generate
+
+# ⬇️ Build TS to dist
 RUN npm run build
 
 EXPOSE 5000

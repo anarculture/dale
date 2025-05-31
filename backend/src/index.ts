@@ -8,7 +8,7 @@ import { json, urlencoded } from 'body-parser';
 import authRoutes from './routes/auth';
 import tripRoutes from './routes/trips';
 import { betterAuth } from 'better-auth';
-import { fromNodeHeaders } from 'better-auth/utils';
+// import { fromNodeHeaders } from 'better-auth/utils';
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ app.use(urlencoded({ extended: true }));
 app.all('/api/auth/*', async (req, res) => {
   const request = new Request(`http://localhost${req.url}`, {
     method: req.method,
-    headers: fromNodeHeaders(req.headers),
+    // headers: fromNodeHeaders(req.headers),
     body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
   });
 
